@@ -32,9 +32,11 @@ export const adminRegister = async (req, res) => {
       password: hashedPassword,
     });
 
-    res
-      .status(201)
-      .json({ success: true, message: "Admin registered successfully" });
+    const token = jwt.sign({ id: newAdmin._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.cookie("token", token);
+    res.redirect('/render/adminDashboard');
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error", error });
   }
@@ -53,7 +55,6 @@ export const studentRegister = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Student already exists" });
     }
-
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -66,11 +67,18 @@ export const studentRegister = async (req, res) => {
       year,
       password: hashedPassword,
     });
-    res
-      .status(201)
-      .json({ success: true, message: "Student registered successfully" });
+
+    const token = jwt.sign({ id: newStudent._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.cookie("token", token);
+    res.redirect('/render/home');
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res.status(500).json({ 
+      success: false,
+      message: "Registration failed. Please try again.",
+      error: error.message 
+    });
   }
 };
 
@@ -119,7 +127,7 @@ export const studentLogin = async (req, res) => {
     });
     console.log(token);
     res.cookie("token", token);
-    res.status(200).json({ success: true, message: "Login successful", token });
+    res.redirect('/render/home');
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
@@ -131,12 +139,26 @@ export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required"
+      });
+    }
+
     // Find admin by email
     const admin = await Admin.findOne({ email });
     if (!admin) {
       return res
         .status(404)
         .json({ success: false, message: "Admin not found" });
+    }
+
+    if (!admin.password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password hash not found for admin"
+      });
     }
 
     // Compare passwords
@@ -153,9 +175,15 @@ export const adminLogin = async (req, res) => {
     });
 
     res.cookie("token", token);
-    res.status(200).json({ success: true, message: "Login successful", token });
+    res.redirect('/render/adminDashboard');
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error", error });
   }
 };
 
+
+export const logout = async (req, res) => {
+  console.log("logout route");
+  res.clearCookie("token");
+  res.redirect("/render/home");
+};

@@ -3,212 +3,126 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>LibManage - Home</title>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script
       src="https://kit.fontawesome.com/1b2855684f.js"
       crossorigin="anonymous"
     ></script>
-    <!-- <link rel="stylesheet" href="/styles.css" /> -->
   </head>
-  <body class="bg-gray-200">
-    <div
-      class="flex justify-between p-4 items-center sticky top-0 bg-white z-50"
-    >
+  <body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="flex justify-between p-6 items-center sticky top-0 bg-white shadow-sm z-50">
       <div>
-        <h1 class="font-bold">LibManage</h1>
+        <h1 class="text-2xl font-bold">LibManage</h1>
       </div>
-      <div class="flex gap-4 items-center">
+      <div class="flex gap-6 items-center">
         <a href="/render/home">
-          <button class="font-semibold cursor-pointer">Home</button>
+          <button class="font-semibold hover:text-gray-600 transition-colors">Home</button>
         </a>
         <a href="/render/library">
-          <button class="font-semibold cursor-pointer">Library</button>
+          <button class="font-semibold hover:text-gray-600 transition-colors">Library</button>
         </a>
-        <a href="/login">
-          <button
-            class="p-4 py-3 bg-black font-bold text-white rounded-2xl cursor-pointer"
-          >
-            Login
-          </button>
-        </a>
+        <% if (!token) { %>
+          <div class="flex gap-4">
+            <a href="/render/auth/student/login">
+              <button class="px-6 py-3 bg-black hover:bg-gray-800 font-semibold text-white rounded-xl transition-colors">
+                Student Login
+              </button>
+            </a>
+            <a href="/render/auth/admin/login">
+              <button class="px-6 py-3 border-2 border-black hover:bg-gray-100 font-semibold text-black rounded-xl transition-colors">
+                Admin Login
+              </button>
+            </a>
+          </div>
+        <% } else { %>
+          <div class="flex gap-4">
+            <a href="/render/studentDashboard">
+              <button class="px-6 py-3 border-2 border-black hover:bg-gray-100 font-semibold text-black rounded-xl transition-colors">
+                Dashboard
+              </button>
+            </a>
+            <a href="/auth/logout">
+              <button class="px-6 py-3 bg-black hover:bg-gray-800 font-semibold text-white rounded-xl transition-colors">
+                Logout
+              </button>
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="w-full h-[70vh] p-6">
+      <div class="relative w-full h-full rounded-2xl overflow-hidden shadow-lg">
+        <img
+          src="https://images.unsplash.com/photo-1740686004244-e9bc7c75d8e5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Library Hero Image"
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+          <h1 class="text-6xl font-bold text-white text-center">Welcome to LibManage</h1>
+        </div>
       </div>
     </div>
-    <div class="w-full h-[70vh] relative p-4">
-      <img
-        src="https://images.unsplash.com/photo-1740686004244-e9bc7c75d8e5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt=""
-        class="w-full h-full object-cover rounded-3xl"
-      />
-    </div>
-    <!-- Top books -->
-    <div>
-      <div>
-        <div class="text-5xl font-semibold w-full text-start p-4">
-          Top Books
-        </div>
+
+    <!-- Book Sections -->
+    <% const sections = [
+      { title: 'Top Books', books: books.slice(0, 10) },
+      { title: 'Comedy Books', books: books.filter(book => book.genre.includes('Comedy')) },
+      { title: 'Fiction Books', books: books.filter(book => book.genre.includes('Fiction')) }
+    ] %>
+
+    <% sections.forEach(function(section) { %>
+    <section class="py-8">
+      <div class="px-6">
+        <h2 class="text-4xl font-bold mb-6"><%= section.title %></h2>
         <div
-          class="flex gap-4 p-4 flex-row justify-start overflow-y-scroll"
+          class="flex gap-6 overflow-x-auto pb-4"
           style="scrollbar-width: none; -ms-overflow-style: none"
         >
-          <% books.slice(0, 10).forEach(function(book) { %>
+          <% section.books.forEach(function(book) { %>
           <div
-            class="m-0 rounded-3xl bg-white p-2 min-w-[24rem] flex flex-col cursor-pointer shadow-black"
+            class="flex flex-col bg-white rounded-2xl p-4 min-w-[20rem] max-w-[20rem] shadow-md hover:shadow-lg transition-shadow"
           >
-            <div class="flex justify-between p-4">
-              <span
-                class="bg-black text-white py-2 px-4 w-fit h-fit rounded-full"
-              >
-                <%= book.copiesAvailable %> books left
+            <div class="flex justify-between items-center mb-4">
+              <span class="bg-black text-white px-4 py-2 rounded-full text-sm">
+                <%= book.copiesAvailable %> available
               </span>
-              <button class="bg-gray-200 p-4 px-5 rounded-2xl">
+              <button class="bg-gray-100 p-3 rounded-xl hover:bg-gray-200 transition-colors">
                 <i class="fa-solid fa-arrow-up-long rotate-45"></i>
               </button>
             </div>
-            <div class="flex flex-col flex-grow p-4 gap-2">
-              <h2 class="text-4xl font-semibold w-full text-start truncate">
-                <%= book.title %>
-              </h2>
-              <p class="text-md font-light w-full line-clamp-2 text-justify h-12 overflow-y-auto">
-                <%= book.description %>
-              </p>
-              <div
-                class="w-full flex gap-2 overflow-x-scroll"
-                style="scrollbar-width: none; -ms-overflow-style: none"
-              >
-                <% book.genre.forEach(function(genre) { %>
-                <span class="bg-black text-white py-1 px-4 rounded-full w-fit">
-                  <%= genre %>
-                </span>
-                <% }); %>
-              </div>
-              <span class="w-full opacity-70 font-light text-start text-sm">
-                by: <%= book.author %>
+
+            <h3 class="text-2xl font-bold mb-2 truncate"><%= book.title %></h3>
+            <p class="text-gray-600 text-sm line-clamp-2 mb-4 h-10">
+              <%= book.description %>
+            </p>
+
+            <div class="flex flex-wrap gap-2 mb-4">
+              <% book.genre.forEach(function(genre) { %>
+              <span class="bg-gray-800 text-white text-xs px-3 py-1 rounded-full">
+                <%= genre %>
               </span>
+              <% }); %>
             </div>
-            <!-- <img
+
+            <p class="text-sm text-gray-500 mb-4">by <%= book.author %></p>
+
+            <% if (book.bookImage) { %>
+            <img
               src="<%= book.bookImage %>"
               alt="<%= book.title %>"
-              class="rounded-3xl w-full h-[16rem] object-cover mt-auto"
-            /> -->
+              class="w-full h-48 object-cover rounded-xl mt-auto"
+            />
+            <% } %>
           </div>
           <% }); %>
         </div>
       </div>
-    </div>
-    <!-- Comedy books -->
-    <div>
-      <div>
-        <div class="text-5xl font-semibold w-full text-start p-4">
-          Comedy Books
-        </div>
-        <div
-          class="flex gap-4 p-4 flex-row justify-start overflow-x-scroll"
-          style="scrollbar-width: none; -ms-overflow-style: none"
-        >
-          <% books.forEach(function(book) { %> <%
-          if(book.genre.includes("Comedy")) { %>
-          <div
-            class="m-0 rounded-3xl bg-white p-2 min-w-[24rem] flex flex-col cursor-pointer shadow-md"
-          >
-            <!-- Card content remains the same -->
-            <div class="flex justify-between p-4">
-              <span
-                class="bg-black text-white py-2 px-4 w-fit h-fit rounded-full"
-              >
-                <%= book.copiesAvailable %> books left
-              </span>
-              <button class="bg-gray-200 p-4 px-5 rounded-2xl">
-                <i class="fa-solid fa-arrow-up-long rotate-45"></i>
-              </button>
-            </div>
-            <div class="flex flex-col flex-grow p-4 gap-2">
-              <h2 class="text-4xl font-semibold w-full text-start truncate">
-                <%= book.title %>
-              </h2>
-              <p class="text-md font-light w-full line-clamp-2 text-justify h-12 overflow-y-auto">
-                <%= book.description %>
-              </p>
-              <div
-                class="w-full flex gap-2 overflow-x-scroll"
-                style="scrollbar-width: none; -ms-overflow-style: none"
-              >
-                <% book.genre.forEach(function(genre) { %>
-                <span class="bg-black text-white py-1 px-4 rounded-full w-fit">
-                  <%= genre %>
-                </span>
-                <% }); %>
-              </div>
-              <span class="w-full opacity-70 font-light text-start text-sm">
-                by: <%= book.author %>
-              </span>
-            </div>
-            <img
-              src="<%= book.bookImage %>"
-              alt="<%= book.title %>"
-              class="rounded-3xl w-full h-[16rem] object-cover mt-auto"
-            />
-          </div>
-          <% } %> <% }); %>
-        </div>
-      </div>
-    </div>
-    <!-- Drama books -->
-    <div>
-      <div>
-        <div class="text-5xl font-semibold w-full text-start p-4">
-          Fiction Books
-        </div>
-        <div
-          class="flex gap-4 p-4 flex-row justify-start overflow-x-scroll"
-          style="scrollbar-width: none; -ms-overflow-style: none"
-        >
-          <% books.forEach(function(book) { %> <% if(["Fiction"].some(genre =>
-          book.genre.includes(genre))) { %>
-          <div
-            class="m-0 rounded-3xl bg-white p-2 min-w-[24rem] flex flex-col cursor-pointer shadow-md"
-          >
-            <!-- Card content remains the same -->
-            <div class="flex justify-between p-4">
-              <span
-                class="bg-black text-white py-2 px-4 w-fit h-fit rounded-full"
-              >
-                <%= book.copiesAvailable %> books left
-              </span>
-              <button class="bg-gray-200 p-4 px-5 rounded-2xl">
-                <i class="fa-solid fa-arrow-up-long rotate-45"></i>
-              </button>
-            </div>
-            <div class="flex flex-col flex-grow p-4 gap-2">
-              <h2 class="text-4xl font-semibold w-full text-start truncate">
-                <%= book.title %>
-              </h2>
-              <p class="text-md font-light w-full line-clamp-2 text-justify h-12 overflow-y-auto">
-                <%= book.description %>
-              </p>
-              <div
-                class="w-full flex gap-2 overflow-x-scroll"
-                style="scrollbar-width: none; -ms-overflow-style: none"
-              >
-                <% book.genre.forEach(function(genre) { %>
-                <span class="bg-black text-white py-1 px-4 rounded-full w-fit">
-                  <%= genre %>
-                </span>
-                <% }); %>
-              </div>
-              <span class="w-full opacity-70 font-light text-start text-sm">
-                by: <%= book.author %>
-              </span>
-            </div>
-            <img
-              src="<%= book.bookImage %>"
-              alt="<%= book.title %>"
-              class="rounded-3xl w-full h-[16rem] object-cover mt-auto"
-            />
-          </div>
-          <% } %> <% }); %>
-        </div>
-      </div>
-    </div>
+    </section>
+    <% }); %>
+
   </body>
 </html>

@@ -3,87 +3,101 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>LibManage - Library</title>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script
       src="https://kit.fontawesome.com/1b2855684f.js"
       crossorigin="anonymous"
     ></script>
-    <!-- <link rel="stylesheet" href="/styles.css" /> -->
   </head>
-  <body class="bg-white-200">
-    <div
-      class="flex justify-between p-4 items-center sticky top-0 bg-white z-50"
-    >
+  <body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="flex justify-between p-6 items-center sticky top-0 bg-white shadow-sm z-50">
       <div>
-        <h1 class="font-bold">LibManage</h1>
+        <h1 class="text-2xl font-bold">LibManage</h1>
       </div>
-      <div class="flex gap-4 items-center">
+      <div class="flex gap-6 items-center">
         <a href="/render/home">
-          <button class="font-semibold cursor-pointer">Home</button>
+          <button class="font-semibold hover:text-gray-600 transition-colors">Home</button>
         </a>
-        <a href="/render/auth/student/login">
-          <button
-            class="p-4 py-3 bg-black font-bold text-white rounded-2xl cursor-pointer"
-          >
-            Login
-          </button>
+        <a href="/render/library">
+          <button class="font-semibold hover:text-gray-600 transition-colors">Library</button>
         </a>
-        <a href="/addBook">
-          <button
-            class="p-4 py-3 bg-black font-bold text-white rounded-2xl cursor-pointer"
-          >
-            Add book
-          </button>
-        </a>
+        <% if (locals.token) { %>
+          <form action="/auth/logout" method="POST" class="m-0">
+            <button type="submit" class="px-6 py-3 bg-black hover:bg-gray-800 font-semibold text-white rounded-xl transition-colors">
+              Logout
+            </button>
+          </form>
+        <% } %>
       </div>
-    </div>
-    <!-- Top books -->
-    <div class="flex flex-col mx-4 rounded-3xl bg-gray-200 p-4 gap-4">
-      <div
-        class="flex text-5xl font-semibold w-full text-start p-4 rounded-3xl bg-white justify-between"
-      >
-        Welcome to Library
+    </nav>
+
+    <!-- Main Content -->
+    <div class="p-6">
+      <div class="bg-white rounded-2xl shadow-md p-6 mb-6">
+        <h1 class="text-4xl font-bold">Welcome to Library</h1>
       </div>
-      <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-y-scroll max-h-[77vh] rounded-3xl"
-        style="scrollbar-width: none; -ms-overflow-style: none"
-      >
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-h-[calc(100vh-16rem)] overflow-y-auto pb-6"
+           style="scrollbar-width: none; -ms-overflow-style: none">
         <% books.forEach(function(book) { %>
-        <div
-          class="m-0 rounded-3xl bg-white p-2 min-w-[24rem] flex flex-col cursor-pointer shadow-black"
-        >
-          <div class="flex justify-between p-4">
-            <span
-              class="bg-black text-white py-2 px-4 w-fit h-fit rounded-full"
-            >
-              <%= book.copiesAvailable %> books left
+        <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-4 flex flex-col">
+          <div class="flex justify-between items-center mb-4">
+            <span class="bg-black text-white px-4 py-2 rounded-full text-sm">
+              <%= book.copiesAvailable %> available
             </span>
-            <button class="bg-gray-200 p-4 px-5 rounded-2xl">
+            <button class="bg-gray-100 p-3 rounded-xl hover:bg-gray-200 transition-colors">
               <i class="fa-solid fa-arrow-up-long rotate-45"></i>
             </button>
           </div>
-          <div class="flex flex-col flex-grow p-4 gap-2">
-            <h2 class="text-4xl font-semibold w-full text-start truncate">
-              <%= book.title %>
-            </h2>
-            <p class="text-md font-light w-full line-clamp-2 text-justify">
-              <%= book.description %>
-            </p>
-            <div
-              class="w-full flex gap-2 overflow-x-scroll"
-              style="scrollbar-width: none; -ms-overflow-style: none"
-            >
-              <% book.genre.forEach(function(genre) { %>
-              <span class="bg-black text-white py-1 px-4 rounded-full w-fit">
-                <%= genre %>
-              </span>
-              <% }); %>
-            </div>
-            <span class="w-full opacity-70 font-light text-start text-sm">
-              by: <%= book.author %>
+
+          <h2 class="text-2xl font-bold mb-2 truncate"><%= book.title %></h2>
+          <p class="text-gray-600 text-sm line-clamp-2 mb-4 flex-grow">
+            <%= book.description %>
+          </p>
+
+          <div class="flex flex-wrap gap-2 mb-4">
+            <% book.genre.forEach(function(genre) { %>
+            <span class="bg-gray-800 text-white text-xs px-3 py-1 rounded-full">
+              <%= genre %>
             </span>
+            <% }); %>
           </div>
+
+          <p class="text-sm text-gray-500 mb-4">by <%= book.author %></p>
+          <button 
+            class="w-full px-4 py-3 bg-black text-white font-semibold rounded-xl 
+            hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+            onclick="console.log('clicked');
+            fetch('/student/borrowbook', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                bookId: '<%= book._id %>'
+              }),
+              credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert('Book borrowed successfully!');
+                location.reload();
+              } else {
+                alert(data.message || 'Error borrowing book');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error.message);
+              alert('Error borrowing book',error.message);
+            })"
+          >
+            <i class="fa-solid fa-book-bookmark"></i>
+            Borrow
+          </button>
         </div>
         <% }); %>
       </div>

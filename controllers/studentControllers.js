@@ -1,10 +1,38 @@
 import Student from "../models/studentModel.js";
 import Book from "../models/bookModel.js";
+import jwt from "jsonwebtoken";
+
+// Helper function to get all students
+export const fetchAllStudents = async () => {
+    try {
+        const students = await Student.find();
+        return { success: true, data: students };
+    } catch (error) {
+        return { success: false, message: "Error fetching students", error };
+    }
+};
 
 // Borrow a book
 export const borrowBook = async (req, res) => {
+    console.log("borrow book");
     try {
-        const { studentId, bookId } = req.body;
+        // Extract token from cookies
+        const token = req.cookies.token;
+        if (!token) {
+            alert("Please login first");
+            return res.status(401).json({ success: false, message: "Authentication token missing" });
+        }
+
+        // Verify and decode token to get studentId
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(401).json({ success: false, message: "Invalid token" });
+        }
+        const studentId = decoded.id;
+
+        const { bookId } = req.body;
 
         // Find the student and book
         const student = await Student.findById(studentId);
@@ -39,7 +67,23 @@ export const borrowBook = async (req, res) => {
 // Return a book
 export const returnBook = async (req, res) => {
     try {
-        const { studentId, bookId } = req.body;
+        // Extract token from cookies
+        const token = req.cookies.token;
+        if (!token) {
+            alert("Please login first");
+            return res.status(401).json({ success: false, message: "Authentication token missing" });
+        }
+
+        // Verify and decode token to get studentId
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(401).json({ success: false, message: "Invalid token" });
+        }
+        const studentId = decoded.id;
+
+        const { bookId } = req.body;
 
         // Find the student and book
         const student = await Student.findById(studentId);
@@ -75,3 +119,34 @@ export const returnBook = async (req, res) => {
         res.status(500).json({ success: false, message: "Error returning book", error });
     }
 };
+
+export const getAllStudents = async (req, res) => {
+    try {
+        const students = await Student.find();
+        res.status(200).json({ success: true, data: students });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching students", error });
+    }
+};      
+
+export const getStudentById = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const student = await Student.findById(studentId);
+        res.status(200).json({ success: true, data: student });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching student", error });
+    }
+};
+
+export const removeStudent = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        await Student.findByIdAndDelete(studentId);
+        res.status(200).json({ success: true, message: "Student removed successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error removing student", error });
+    }
+};  
+
+
