@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script
+      src="https://kit.fontawesome.com/1b2855684f.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- <link rel="stylesheet" href="/styles.css" /> -->
+  </head>
+  <body class="bg-gray-200">
+    <div
+      class="flex justify-between p-4 items-center sticky top-0 bg-white z-50"
+    >
+      <div>
+        <h1 class="font-bold">LibManage</h1>
+      </div>
+      <div class="flex gap-4 items-center">
+        <a href="/render/home">
+          <button class="font-semibold cursor-pointer">Home</button>
+        </a>
+        <a href="/render/library">
+          <button class="font-semibold cursor-pointer">Library</button>
+        </a>
+        <a href="/login">
+          <button
+            class="p-4 py-3 bg-black font-bold text-white rounded-2xl cursor-pointer"
+          >
+            Login
+          </button>
+        </a>
+      </div>
+    </div>
+    <div class="w-full h-[70vh] relative p-4">
+      <img
+        src="https://images.unsplash.com/photo-1740686004244-e9bc7c75d8e5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        alt=""
+        class="w-full h-full object-cover rounded-3xl"
+      />
+    </div>
+    <!-- Top books -->
+    <div>
+      <div>
+        <div class="text-5xl font-semibold w-full text-start p-4">
+          Top Books
+        </div>
+        <div
+          class="flex gap-4 p-4 flex-row justify-start overflow-y-scroll"
+          style="scrollbar-width: none; -ms-overflow-style: none"
+        >
+          <% books.slice(0, 10).forEach(function(book) { %>
+          <div
+            class="m-0 rounded-3xl bg-white p-2 min-w-[24rem] flex flex-col cursor-pointer shadow-black"
+          >
+            <div class="flex justify-between p-4">
+              <span
+                class="bg-black text-white py-2 px-4 w-fit h-fit rounded-full"
+              >
+                <%= book.copiesAvailable %> books left
+              </span>
+              <button class="bg-gray-200 p-4 px-5 rounded-2xl">
+                <i class="fa-solid fa-arrow-up-long rotate-45"></i>
+              </button>
+            </div>
+            <div class="flex flex-col flex-grow p-4 gap-2">
+              <h2 class="text-4xl font-semibold w-full text-start truncate">
+                <%= book.title %>
+              </h2>
+              <p class="text-md font-light w-full line-clamp-2 text-justify h-12 overflow-y-auto">
+                <%= book.description %>
+              </p>
+              <div
+                class="w-full flex gap-2 overflow-x-scroll"
+                style="scrollbar-width: none; -ms-overflow-style: none"
+              >
+                <% book.genre.forEach(function(genre) { %>
+                <span class="bg-black text-white py-1 px-4 rounded-full w-fit">
+                  <%= genre %>
+                </span>
+                <% }); %>
+              </div>
+              <span class="w-full opacity-70 font-light text-start text-sm">
+                by: <%= book.author %>
+              </span>
+            </div>
+            <!-- <img
+              src="<%= book.bookImage %>"
+              alt="<%= book.title %>"
+              class="rounded-3xl w-full h-[16rem] object-cover mt-auto"
+            /> -->
+          </div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+    <!-- Comedy books -->
+    <div>
+      <div>
+        <div class="text-5xl font-semibold w-full text-start p-4">
+          Comedy Books
+        </div>
+        <div
+          class="flex gap-4 p-4 flex-row justify-start overflow-x-scroll"
+          style="scrollbar-width: none; -ms-overflow-style: none"
+        >
+          <% books.forEach(function(book) { %> <%
+          if(book.genre.includes("Comedy")) { %>
+          <div
+            class="m-0 rounded-3xl bg-white p-2 min-w-[24rem] flex flex-col cursor-pointer shadow-md"
+          >
+            <!-- Card content remains the same -->
+            <div class="flex justify-between p-4">
+              <span
+                class="bg-black text-white py-2 px-4 w-fit h-fit rounded-full"
+              >
+                <%= book.copiesAvailable %> books left
+              </span>
+              <button class="bg-gray-200 p-4 px-5 rounded-2xl">
+                <i class="fa-solid fa-arrow-up-long rotate-45"></i>
+              </button>
+            </div>
+            <div class="flex flex-col flex-grow p-4 gap-2">
+              <h2 class="text-4xl font-semibold w-full text-start truncate">
+                <%= book.title %>
+              </h2>
+              <p class="text-md font-light w-full line-clamp-2 text-justify h-12 overflow-y-auto">
+                <%= book.description %>
+              </p>
+              <div
+                class="w-full flex gap-2 overflow-x-scroll"
+                style="scrollbar-width: none; -ms-overflow-style: none"
+              >
+                <% book.genre.forEach(function(genre) { %>
+                <span class="bg-black text-white py-1 px-4 rounded-full w-fit">
+                  <%= genre %>
+                </span>
+                <% }); %>
+              </div>
+              <span class="w-full opacity-70 font-light text-start text-sm">
+                by: <%= book.author %>
+              </span>
+            </div>
+            <img
+              src="<%= book.bookImage %>"
+              alt="<%= book.title %>"
+              class="rounded-3xl w-full h-[16rem] object-cover mt-auto"
+            />
+          </div>
+          <% } %> <% }); %>
+        </div>
+      </div>
+    </div>
+    <!-- Drama books -->
+    <div>
+      <div>
+        <div class="text-5xl font-semibold w-full text-start p-4">
+          Fiction Books
+        </div>
+        <div
+          class="flex gap-4 p-4 flex-row justify-start overflow-x-scroll"
+          style="scrollbar-width: none; -ms-overflow-style: none"
+        >
+          <% books.forEach(function(book) { %> <% if(["Fiction"].some(genre =>
+          book.genre.includes(genre))) { %>
+          <div
+            class="m-0 rounded-3xl bg-white p-2 min-w-[24rem] flex flex-col cursor-pointer shadow-md"
+          >
+            <!-- Card content remains the same -->
+            <div class="flex justify-between p-4">
+              <span
+                class="bg-black text-white py-2 px-4 w-fit h-fit rounded-full"
+              >
+                <%= book.copiesAvailable %> books left
+              </span>
+              <button class="bg-gray-200 p-4 px-5 rounded-2xl">
+                <i class="fa-solid fa-arrow-up-long rotate-45"></i>
+              </button>
+            </div>
+            <div class="flex flex-col flex-grow p-4 gap-2">
+              <h2 class="text-4xl font-semibold w-full text-start truncate">
+                <%= book.title %>
+              </h2>
+              <p class="text-md font-light w-full line-clamp-2 text-justify h-12 overflow-y-auto">
+                <%= book.description %>
+              </p>
+              <div
+                class="w-full flex gap-2 overflow-x-scroll"
+                style="scrollbar-width: none; -ms-overflow-style: none"
+              >
+                <% book.genre.forEach(function(genre) { %>
+                <span class="bg-black text-white py-1 px-4 rounded-full w-fit">
+                  <%= genre %>
+                </span>
+                <% }); %>
+              </div>
+              <span class="w-full opacity-70 font-light text-start text-sm">
+                by: <%= book.author %>
+              </span>
+            </div>
+            <img
+              src="<%= book.bookImage %>"
+              alt="<%= book.title %>"
+              class="rounded-3xl w-full h-[16rem] object-cover mt-auto"
+            />
+          </div>
+          <% } %> <% }); %>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
