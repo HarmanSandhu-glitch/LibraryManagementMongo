@@ -2,7 +2,6 @@ import Student from "../models/studentModel.js";
 import Book from "../models/bookModel.js";
 import jwt from "jsonwebtoken";
 
-// Helper function to get all students
 export const fetchAllStudents = async () => {
     try {
         const students = await Student.find();
@@ -12,18 +11,15 @@ export const fetchAllStudents = async () => {
     }
 };
 
-// Borrow a book
 export const borrowBook = async (req, res) => {
     console.log("borrow book");
     try {
-        // Extract token from cookies
         const token = req.cookies.token;
         if (!token) {
             alert("Please login first");
             return res.status(401).json({ success: false, message: "Authentication token missing" });
         }
 
-        // Verify and decode token to get studentId
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -34,7 +30,6 @@ export const borrowBook = async (req, res) => {
 
         const { bookId } = req.body;
 
-        // Find the student and book
         const student = await Student.findById(studentId);
         const book = await Book.findById(bookId);
 
@@ -50,11 +45,9 @@ export const borrowBook = async (req, res) => {
             return res.status(400).json({ success: false, message: "No copies available for this book" });
         }
 
-        // Add the book to the student's borrowed books
         student.booksBorrowed.push({ bookId });
         await student.save();
 
-        // Decrease the available copies of the book
         book.copiesAvailable -= 1;
         await book.save();
 
@@ -64,17 +57,14 @@ export const borrowBook = async (req, res) => {
     }
 };
 
-// Return a book
 export const returnBook = async (req, res) => {
     try {
-        // Extract token from cookies
         const token = req.cookies.token;
         if (!token) {
             alert("Please login first");
             return res.status(401).json({ success: false, message: "Authentication token missing" });
         }
 
-        // Verify and decode token to get studentId
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -85,7 +75,6 @@ export const returnBook = async (req, res) => {
 
         const { bookId } = req.body;
 
-        // Find the student and book
         const student = await Student.findById(studentId);
         const book = await Book.findById(bookId);
 
@@ -97,7 +86,6 @@ export const returnBook = async (req, res) => {
             return res.status(404).json({ success: false, message: "Book not found" });
         }
 
-        // Check if the student has borrowed the book
         const borrowedBookIndex = student.booksBorrowed.findIndex(
             (borrowedBook) => borrowedBook.bookId.toString() === bookId
         );
@@ -106,11 +94,9 @@ export const returnBook = async (req, res) => {
             return res.status(400).json({ success: false, message: "Book not borrowed by the student" });
         }
 
-        // Remove the book from the student's borrowed books
         student.booksBorrowed.splice(borrowedBookIndex, 1);
         await student.save();
 
-        // Increase the available copies of the book
         book.copiesAvailable += 1;
         await book.save();
 
@@ -147,6 +133,6 @@ export const removeStudent = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: "Error removing student", error });
     }
-};  
+};
 
 

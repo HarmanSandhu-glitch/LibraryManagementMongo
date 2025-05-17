@@ -5,16 +5,13 @@ import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
-// Load environment variables
 dotenv.config();
 
-// Admin Registration
 export const adminRegister = async (req, res) => {
   console.log("admin register /auth/admin/register");
   try {
     const { name, email, password } = req.body;
 
-    // Check if admin already exists
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
       return res
@@ -22,10 +19,8 @@ export const adminRegister = async (req, res) => {
         .json({ success: false, message: "Admin already exists" });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new admin
     const newAdmin = await Admin.create({
       name,
       email,
@@ -42,23 +37,20 @@ export const adminRegister = async (req, res) => {
   }
 };
 
-// Student Registration
 export const studentRegister = async (req, res) => {
   console.log("student register /auth/student/register");
   try {
     const { name, email, enrollmentNumber, course, year, password } = req.body;
 
-    // Check if student already exists
     const existingStudent = await Student.findOne({ email });
     if (existingStudent) {
       return res
         .status(400)
         .json({ success: false, message: "Student already exists" });
     }
-    // Hash password
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new student
     const newStudent = await Student.create({
       name,
       email,
@@ -82,7 +74,6 @@ export const studentRegister = async (req, res) => {
   }
 };
 
-// Student Login
 export const studentLogin = async (req, res) => {
   console.log("student login /auth/student/login");
   try {
@@ -97,7 +88,6 @@ export const studentLogin = async (req, res) => {
 
     console.log(email,password);
 
-    // Find student by email
     const student = await Student.findOne({ email });
     console.log(student);
     if (!student) {
@@ -113,7 +103,6 @@ export const studentLogin = async (req, res) => {
       });
     }
 
-    // Compare passwords
     const isMatch = await bcrypt.compare(password, student.password);
     if (!isMatch) {
       return res
@@ -121,7 +110,6 @@ export const studentLogin = async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    // Generate token
     const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
@@ -133,7 +121,6 @@ export const studentLogin = async (req, res) => {
   }
 };
 
-// Admin Login
 export const adminLogin = async (req, res) => {
   console.log("admin login /auth/admin/login");
   try {
@@ -146,7 +133,6 @@ export const adminLogin = async (req, res) => {
       });
     }
 
-    // Find admin by email
     const admin = await Admin.findOne({ email });
     if (!admin) {
       return res
@@ -161,7 +147,6 @@ export const adminLogin = async (req, res) => {
       });
     }
 
-    // Compare passwords
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return res
@@ -169,7 +154,6 @@ export const adminLogin = async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    // Generate token
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
@@ -180,7 +164,6 @@ export const adminLogin = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error", error });
   }
 };
-
 
 export const logout = async (req, res) => {
   console.log("logout route");

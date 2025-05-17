@@ -8,7 +8,6 @@ import jwt from "jsonwebtoken";
 const renderRouter = express.Router();
 
 renderRouter.get("/auth/admin/login", (req, res) => {
-  // res.send("Hello World");
   res.render("../Frontend/AuthenticationPages/AdminLogin");
 });
 

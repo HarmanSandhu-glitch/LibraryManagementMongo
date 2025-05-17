@@ -1,6 +1,5 @@
 import Book from '../models/bookModel.js';
 
-// Get all books
 export const getAllBooks = async () => {
     try {
         console.log("get all books");
@@ -24,7 +23,6 @@ export const getBookById = async (req, res) => {
     }
 };
 
-// Create a new book
 export const createBook = async (req, res) => {
     console.log("create new Book");
     try {
@@ -36,7 +34,6 @@ export const createBook = async (req, res) => {
     }
 };
 
-// Update a book by ID
 export const updateBook = async (req, res) => {
     console.log("update book");
     try {
@@ -53,7 +50,6 @@ export const updateBook = async (req, res) => {
     }
 };
 
-// Delete a book by ID
 export const deleteBook = async (req, res) => {
     console.log("delete");
     try {
